@@ -83,10 +83,10 @@ TEMPLATES = [
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default='postgresql://jonathan:To3emFBtBiQy3lLEI589uaDVzL4kiA5Y@dpg-cquqi2jv2p9s73e5iuo0-a/djangoxdb',
+        conn_max_age=600
+    )
 }
 
 # For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
@@ -139,24 +139,18 @@ LOCALE_PATHS = [BASE_DIR / 'locale']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# This setting informs Django of the URI path from which your static files will be served to users
+# Here, they well be accessible at your-domain.onrender.com/static/... or yourcustomdomain.com/static/...
+STATIC_URL = '/static/'
 
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = "/static/"
+# The Following code for production may break development mode, so we need to check if we're in DEBUG mode
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# https://whitenoise.readthedocs.io/en/latest/django.html
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+    # Turn on the WhiteNoise storage backend which compresses static files for smaller disk use,
+    # and renames the files with unique names for each version of that file for long term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-auto-field
