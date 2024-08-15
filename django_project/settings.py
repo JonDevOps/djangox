@@ -1,3 +1,6 @@
+# This first line was added as apart of updating our django project to deploy on render
+import dj_database_url
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
